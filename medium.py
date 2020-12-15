@@ -56,10 +56,11 @@ while try_count>0:
 topic_urls = page_source.find_all('a',{'class':'u-flex0 u-height180 u-backgroundCover'})
 topic_urls = [url['href'] for url in topic_urls]
 
+
 if len(topic_urls)==0:
 	print('Could not load the page!')
 else:
-
+	print('Total Topics:',len(topic_urls))
 	time.sleep(10)
 
 	for url in topic_urls[1:2]:
@@ -80,20 +81,18 @@ else:
 
 
 					html_to_text = BeautifulSoup(driver.page_source,features="html.parser")
+					array_of_articles = html_to_text.find_all('h3',{'class':'bj gb gh bl aw eo ep at eq av er gm aq'})
+					array_of_articles = [h3.find('a')['href'] for h3 in array_of_articles]
 					driver.close()
 					break
 			except:
 				print('trying again to fetch urls')
 			try_count-=1
 
-	array_of_articles = html_to_text.find_all('h3',{'class':'bj gb gh bl aw eo ep at eq av er gm aq'})
-
-	array_of_articles = [h3.find('a')['href'] for h3 in array_of_articles]
 	print(len(array_of_articles))
-
+	
 	time.sleep(20)
 	for article_link in array_of_articles:
-
 		try_count=3
 		while try_count>0:
 			try:
@@ -101,6 +100,7 @@ else:
 					link = article_link.split('?')[0]
 				else:
 					link ='https://medium.com'+ article_link.split('?')[0]
+				print(link)
 				with webdriver.Chrome(executable_path=chrome_driver_path,options=chrome_options) as driver:
 					driver.set_page_load_timeout(3000)
 					driver.get(link)
